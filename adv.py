@@ -29,7 +29,41 @@ player = Player(world.starting_room)
 # traversal_path = ['n', 'n']
 traversal_path = []
 
+rev_directions = {"n": "s", "s": "n", "e": "w", "w": "e"}
 
+class Queue():
+    def __init__(self):
+        self.queue = []
+    
+    def enqueue(self, value):
+        self.queue.append(value)
+
+    def deque(self):
+        if self.size() > 0:
+            return self.queue.pop(0)
+        else:
+            return None
+        
+    def size(self):
+        return len(self.queue)
+
+def bfs(starting_room, visited= set()):
+    path = []
+    for direction in player.current_room.get_exits():
+        player.travel(direction)
+        if player.current_room in visited:
+            player.travel(rev_directions[direction])
+        else:
+            visited.add(player.current_room)
+            path.append(direction)
+            path = path + bfs(player.current_room, visited)
+            player.travel(rev_directions[direction])
+            path.append(rev_directions[direction])
+    return path
+
+traversal_path = bfs(player.current_room)
+
+#TESTS PASSED: 1000 moves, 500 rooms visited
 
 # TRAVERSAL TEST - DO NOT MODIFY
 visited_rooms = set()
